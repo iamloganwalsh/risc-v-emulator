@@ -1,0 +1,1 @@
+// Processes each instruction one by one

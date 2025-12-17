@@ -1,0 +1,1 @@
+// Prints out all the registers
