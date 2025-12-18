@@ -21,10 +21,10 @@
 #define FILE_SIZE 2048
 
 typedef struct {
-    uint32_t size;
     uint8_t data[HEAP_BANK_SIZE];
-    bool is_allocated;
-} HeapBank;
+    bool bank_allocated[NUM_BANKS];
+    uint32_t bank_sizes[NUM_BANKS];
+} Heap;
 
 typedef struct {
     uint32_t pc;

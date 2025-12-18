@@ -156,7 +156,10 @@ int lb_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, int32_t signed_imm, V
         vm->regs[rd] = ((int32_t)(mem_value & 0xFF) << 24) >> 24;
     }
     else if (VIRTUAL_ROUTINES_START <= mem_address && mem_address <= VIRTUAL_ROUTINES_END) {
-
+        if (check_vr(instruction, mem_address, mem_value, vm) == 1) {
+            return 0;
+        }
+        
     }
     else if (HEAP_BANKS_START <= mem_address && mem_address <= HEAP_BANKS_END) {
 
