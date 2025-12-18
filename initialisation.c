@@ -1,4 +1,5 @@
 #include "initialisation.h"
+
     
 int read_file(const char *filename, uint8_t *instruction_mem, uint8_t *data_mem){        // *data_mem allows us to work directly on these values
     FILE *fptr;
@@ -25,3 +26,4 @@ int read_file(const char *filename, uint8_t *instruction_mem, uint8_t *data_mem)
         data_mem[i - INST_MEM_SIZE] = buffer[i];
     }
 }
+

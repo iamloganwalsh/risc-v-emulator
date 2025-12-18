@@ -4,6 +4,7 @@
 #include "vm.h"
 #include "instructions.h"
 #include <stdint.h>
+#include <stdlib.h>
 
 int process_instruction(uint32_t instruction, VM *vm);
 

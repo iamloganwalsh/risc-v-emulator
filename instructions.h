@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include "vm.h"
+#include "virtual_routines.h"
 
 // Arithmetic
 int add_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint8_t rs2, VM *vm);

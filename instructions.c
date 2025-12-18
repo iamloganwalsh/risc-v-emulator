@@ -139,11 +139,6 @@ int lb_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, int32_t signed_imm, V
         vm->pc += 4;
         return 0;
     }
-    uint32_t mem_address = vm->regs[rs1] + signed_imm;
-        if (rd == 0) {
-        vm->pc += 4;
-        return 0;
-    }
 
     uint32_t mem_address = vm->regs[rs1] + signed_imm;
 
@@ -155,13 +150,14 @@ int lb_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, int32_t signed_imm, V
         uint32_t mem_value = vm->instruction_mem[mem_address];
         vm->regs[rd] = ((int32_t)(mem_value & 0xFF) << 24) >> 24;
     }
-    else if (VIRTUAL_ROUTINES_START <= mem_address && mem_address <= VIRTUAL_ROUTINES_END) {
-        if (check_vr(instruction, mem_address, mem_value, vm) == 1) {
+    else if (VIRTUAL_ROUTINE_START <= mem_address && mem_address <= VIRTUAL_ROUTINE_END) {
+        uint32_t val;
+        if (check_vr(instruction, mem_address, &val, vm) == 1) {
             return 0;
         }
         
     }
-    else if (HEAP_BANKS_START <= mem_address && mem_address <= HEAP_BANKS_END) {
+    else if (HEAP_BANK_START <= mem_address && mem_address <= HEAP_BANK_END) {
 
     }
     else {
