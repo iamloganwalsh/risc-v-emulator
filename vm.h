@@ -4,6 +4,15 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define INST_MEM_START 0x0000
+#define INST_MEM_END 0x03ff
+#define DATA_MEM_START 0x0400
+#define DATA_MEM_END 0x07ff
+#define VIRTUAL_ROUTINE_START 0x0800
+#define VIRTUAL_ROUTINE_END 0x08ff
+#define HEAP_BANK_START 0xb700
+#define HEAP_BANK_END 0xd700
+
 #define NUM_HEAP_BANK 128
 #define NUM_REGISTER 32
 #define HEAP_BANK_SIZE 64
