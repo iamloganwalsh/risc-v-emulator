@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "vm.h"
 #include "initialisation.h"
+#include "decoding.h"
 
 int main(int argc, char *argv[]) {
     VM vm = {0};        // Initialise with 0 values
@@ -19,15 +20,13 @@ int main(int argc, char *argv[]) {
 
     // Next step: instruction parsing
 for (int i = 0; i < INST_MEM_SIZE; i += 4) {
-    uint32_t instr = 
+    uint32_t instruction = 
         vm.instruction_mem[i] |
         (vm.instruction_mem[i+1] << 8) |
         (vm.instruction_mem[i+2] << 16) |
         (vm.instruction_mem[i+3] << 24); // little-endian encoded
 
     vm.regs[0] = 0; // Clear 0th register
-    printf("Instruction %d: 0x%08x\n", i/4, instr);
-    
     process_instruction(instruction, &vm);
 }
 
