@@ -1,4 +1,5 @@
 #include "decoding.h"
+#include "instructions.h"
 #include <stdio.h>
 
 int type_r(uint32_t instruction, uint8_t opcode, VM *vm) {
@@ -12,45 +13,45 @@ int type_r(uint32_t instruction, uint8_t opcode, VM *vm) {
         case 0b0000000:
             switch (func3) {
                 case 0b000:
-                    // add (1)
+                    add_inst(rd, rs1, rs2, vm);
                     break;
 
                 case 0b001:
-                    // sll
+                    sll_inst(rd, rs1, rs2, vm);
                     break;
 
                 case 0b010:
-                    // slt
+                    slt_inst(rd, rs1, rs2, vm);
                     break;
 
                 case 0b011:
-                    // sltu
+                    sltu_inst(rd, rs1, rs2, vm);
                     break;
                 
                 case 0b100:
-                    // xor
+                    xor_inst(rd, rs1, rs2, vm);
                     break;
 
                 case 0b101:
-                    // srl
+                    srl_inst(rd, rs1, rs2, vm);
                     break;
 
                 case 0b110:
-                    // or
+                    or_inst(rd, rs1, rs2, vm);
                     break;
 
                 case 0b111:
-                    // and (9)
+                    and_inst(rd, rs1, rs2, vm);
             }
 
         case 0b0100000:
             switch (func3) {
                 case 0b000:
-                    // sub
+                    sub_inst(rd, rs1, rs2, vm);
                     break;
 
                 case 0b101:
-                    // sra
+                    sra_inst(rd, rs1, rs2, vm);
                     break;
             }
     }
@@ -60,7 +61,7 @@ int type_r(uint32_t instruction, uint8_t opcode, VM *vm) {
 
 int type_i(uint32_t instruction, uint8_t opcode, VM *vm) {
     uint32_t unsigned_imm = (instruction >> 20) & 0xFFF;
-    int32_t signed_mm = (int32_t)instruction >> 20;     // Sign extended SIGNED integer
+    int32_t signed_imm = (int32_t)instruction >> 20;     // Sign extended SIGNED integer
     uint8_t rs1   = (instruction & 0x000F8000) >> 15;   // 5 bits
     uint8_t func3 = (instruction & 0x00007000) >> 12;   // 3 bits
     uint8_t rd    = (instruction & 0x00000F80) >> 7;    // 5 bits
@@ -69,56 +70,57 @@ int type_i(uint32_t instruction, uint8_t opcode, VM *vm) {
         case 0b0010011:
             switch (func3){
                 case 0b000:
-                    // addi (2)
+                    addi_inst(rd, rs1, signed_imm, vm);
                     break;
 
                 case 0b010:
-                    // slti (23)
+                    slti_inst(rd, rs1, unsigned_imm, vm);
                     break;
 
                 case 0b011:
-                    // sltiu (25)
+                    sltiu_inst(rd, rs1, unsigned_imm, vm);
+                    break;
 
                 case 0b100:
-                    //xori (6)
+                    xori_inst(rd, rs1, signed_imm, vm);
                     break;
 
                 case 0b110:
-                    // ori (8)
+                    ori_inst(rd, rs1, signed_imm, vm);
                     break;
 
                 case 0b111:
-                    // andi (10)
+                    andi_inst(rd, rs1, signed_imm, vm);
                     break;
             }
 
         case 0000011:
             switch(func3) {
                 case 0b000:
-                    // lb (14)
+                    lb_inst(rd, rs1, signed_imm, vm);
                     break;
 
-                case: 0b001:
-                    // lh (15)
+                case 0b001:
+                    lh_inst(rd, rs1, signed_imm, vm);
                     break;
 
-                case: 0b010:
-                    // lw (16)
+                case 0b010:
+                    lw_inst(rd, rs1, signed_imm, vm);
                     break;
 
                 case 0b100:
-                    // lbu (17)
+                    lbu_inst(rd, rs1, unsigned_imm, vm);
                     break;
 
                 case 0b101:
-                    // lhu (18)
+                    lhu_inst(rd, rs1, unsigned_imm, vm);
                     break;
             }
 
         case 0b1100111:
             switch (func3) {
                 case 0b000:
-                    // jalr (33)
+                    jalr_inst(rd, rs1, signed_imm, vm);
                     break;
             }
     }
@@ -136,18 +138,18 @@ int type_s(uint32_t instruction, uint8_t opcode, VM *vm) {
     uint8_t rd    = (instruction & 0x00000F80) >> 7;    // 5 bits
 
     switch (opcode) {
-        case: 0b0100011:
+        case 0b0100011:
             switch (func3) {
-                case: 0b000:
-                    // sb (19)
+                case 0b000:
+                    sb_inst(rs1, rs2, signed_imm, vm);
                     break;
 
-                case: 0b001:
-                    // sh (20)
+                case 0b001:
+                    sh_inst(rs1, rs2, signed_imm, vm);
                     break;
 
                 case 0b010:
-                    // sw (21)
+                    sw_inst(rs1, rs2, signed_imm, vm);
                     break;
             }
     }
@@ -168,27 +170,27 @@ int type_sb(uint32_t instruction, uint8_t opcode, VM *vm) {
 
     switch (func3){
         case 0b000:
-            // beq (26)
+            beq_inst(rs1, rs2, signed_imm, vm);
             break;
 
         case 0b001:
-            // bne (27)
+            bne_inst(rs1, rs2, signed_imm,  vm);
             break;
 
         case 0b100:
-            // blt (28)
+            blt_inst(rs1, rs2, signed_imm, vm);
             break;
 
         case 0b101:
-            // bge (30)
+            bge_inst(rs1, rs2, signed_imm, vm);
             break;
 
         case 0b110:
-            // bltu (29)
+            bltu_inst(rs1, rs2, unsigned_imm, vm);
             break;
         
         case 0b111:
-            // bgeu (31)
+            bgeu_inst(rs1, rs2, unsigned_imm, vm);
             break;
     }
 
@@ -200,7 +202,7 @@ int type_u(uint32_t instruction, uint8_t opcode, VM *vm) {
     int32_t signed_imm = (int32_t)unsigned_imm;         // We don't bit shift this one, we want 11:0 = 0
     uint8_t rd    = (instruction & 0x00000F80) >> 7;    // 5 bits
 
-    // lui (4)
+    lui_inst(rd, signed_imm, vm);
     return 0;
 }
 
@@ -213,7 +215,7 @@ int type_uj(uint32_t instruction, uint8_t opcode, VM *vm) {
     int32_t signed_imm = ((int32_t)(unsigned_imm << 11)) >> 11;     // Shift by 11 to preserve a 0th bit = 0
     uint8_t rd    = (instruction & 0x00000F80) >> 7;    // 5 bits
 
-    // jal (32)
+    jal_inst(rd, signed_imm, vm);
     return 0;
 }
 

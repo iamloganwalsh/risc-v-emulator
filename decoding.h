@@ -2,6 +2,8 @@
 #ifndef DECODING_H
 #define DECODING_H
 #include "vm.h"
+#include "instructions.h"
+#include <stdint.h>
 
 int process_instruction(uint32_t instruction, VM *vm);
 
