@@ -7,12 +7,11 @@
 int main(int argc, char *argv[]) {
     VM vm = {0};        // Initialise with 0 values
 
-    // if (argc != 2) {
-    //     fprintf(stderr, "Please ensure to only pass the filename, e.g ./vm <path_to_binary_file>\n");
-    //     return 1;
-    // }
-    // const char *filename = argv[1];
-    const char *filename = "printing_h.mi";
+    if (argc != 2) {
+        fprintf(stderr, "Please specify only the filepath, e.g ./vm printing_h.mi\n");
+        return 1;
+    }
+    const char *filename = argv[1];
 
     if (read_file(filename, vm.instruction_mem, vm.data_mem) == 1) {
         exit(1);    // if above returns 1, there was an error parsing the file
