@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
     //     return 1;
     // }
     // const char *filename = argv[1];
-    const char *filename = "add_2_numbers.mi";
+    const char *filename = "printing_h.mi";
 
     if (read_file(filename, vm.instruction_mem, vm.data_mem) == 1) {
         exit(1);    // if above returns 1, there was an error parsing the file

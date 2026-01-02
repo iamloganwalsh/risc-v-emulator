@@ -4,25 +4,22 @@ int check_vr(uint32_t instruction, uint32_t memory_address, uint32_t *value, VM 
     uint32_t value_copy = *value;
 
     if (memory_address == 0x0800) {
-        char ascii_char = (char)value_copy;
-        printf("%c", ascii_char);
+        printf("%c\n", (char)*value);
         return 1;
     }
 
     else if (memory_address == 0x0804) {
-        int32_t signed_value = (int32_t)value_copy;
-        printf("%d\n", signed_value);
+        printf("%d\n", (int32_t)*value);
         return 1;
     }
 
     else if (memory_address == 0x0808) {
-        printf("%x", value_copy);
+        printf("%x\n", *value);
         return 1;
     }
 
     else if (memory_address == 0x080C) {
         printf("CPU Halt Requested\n");
-        register_dump_silent(vm);
         exit(0);
     }
 

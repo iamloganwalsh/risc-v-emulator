@@ -2,7 +2,7 @@
 #include "instructions.h"
 #include <stdio.h>
 
-int type_r(uint32_t instruction, uint8_t opcode, VM *vm) {
+int type_r(uint32_t instruction, VM *vm) {
     uint8_t func7 = (instruction & 0xFE000000) >> 25;
     uint8_t rs2   = (instruction & 0x01F00000) >> 20;
     uint8_t rs1   = (instruction & 0x000F8000) >> 15;
@@ -143,7 +143,7 @@ int type_s(uint32_t instruction, uint8_t opcode, VM *vm) {
     return 0;
 }
 
-int type_sb(uint32_t instruction, uint8_t opcode, VM *vm) {
+int type_sb(uint32_t instruction, VM *vm) {
     uint8_t rs2   = (instruction & 0x01F00000) >> 20;
     uint8_t rs1   = (instruction & 0x000F8000) >> 15;
     uint8_t func3 = (instruction & 0x00007000) >> 12;
@@ -178,7 +178,7 @@ int type_sb(uint32_t instruction, uint8_t opcode, VM *vm) {
     return 0;
 }
 
-int type_u(uint32_t instruction, uint8_t opcode, VM *vm) {
+int type_u(uint32_t instruction, VM *vm) {
     uint32_t unsigned_imm = ((instruction >> 12) & 0xFFFFF) << 12;
     int32_t signed_imm = (int32_t)unsigned_imm;
     uint8_t rd    = (instruction & 0x00000F80) >> 7;
@@ -187,7 +187,7 @@ int type_u(uint32_t instruction, uint8_t opcode, VM *vm) {
     return 0;
 }
 
-int type_uj(uint32_t instruction, uint8_t opcode, VM *vm) {
+int type_uj(uint32_t instruction, VM *vm) {
     uint32_t unsigned_imm = 
         ((instruction >> 12) & 0xFF) << 12 | 
         ((instruction >> 20) & 0x1) << 11 |
@@ -207,13 +207,13 @@ int process_instruction(uint32_t instruction, VM *vm) {
 
     switch (opcode) {
         case 0b0110011:
-            type_r(instruction, opcode, vm);
+            type_r(instruction, vm);
             break;
         case 0b0010011:
             type_i(instruction, opcode, vm);
             break;
         case 0b0110111:
-            type_u(instruction, opcode, vm);
+            type_u(instruction, vm);
             break;
         case 0b0000011:
             type_i(instruction, opcode, vm);
@@ -222,10 +222,10 @@ int process_instruction(uint32_t instruction, VM *vm) {
             type_s(instruction, opcode, vm);
             break;
         case 0b1100011:
-            type_sb(instruction, opcode, vm);
+            type_sb(instruction, vm);
             break;
         case 0b1101111:
-            type_uj(instruction, opcode, vm);
+            type_uj(instruction, vm);
             break;
         case 0b1100111:
             type_i(instruction, opcode, vm);
