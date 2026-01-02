@@ -128,7 +128,7 @@ int sra_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint8_t rs2, VM *vm)
         vm->pc += 4;
         return 0;
     }
-    vm->regs[rd] = (vm->regs[rs1] >> vm->regs[rs2]) | (vm->regs[rs1] << (32 - vm->regs[rs2]));
+    vm->regs[rd] = (int32_t)vm->regs[rs1] >> (vm->regs[rs2] & 0x1F);
     vm->pc += 4;
     return 0;
 }
@@ -143,14 +143,15 @@ int lb_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, int32_t signed_imm, V
     if (VIRTUAL_ROUTINE_START <= mem_address && mem_address <= VIRTUAL_ROUTINE_END) {
         uint32_t val = 0;
         int vr_result = check_vr(instruction, mem_address, &val, vm);
-        if (vr_result == 0) {
-
-            if (rd != 0) {
-                vm->regs[rd] = val;
-            }
-            vm->pc += 4;
-            return 0;
+    if (vr_result == 0) {
+        if (rd != 0) {
+            uint8_t byteval = val & 0xFF;
+            int32_t loadedval = ((int32_t)(byteval) << 24) >> 24;  // Sign extend
+            vm->regs[rd] = loadedval;
         }
+        vm->pc += 4;
+        return 0;
+    }
         // If its a virtual routine but didn't map to a valid VR address, throw an error
         register_dump(instruction, vm);
         exit(1);
@@ -189,14 +190,17 @@ int lh_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, int32_t signed_imm, V
     if (VIRTUAL_ROUTINE_START <= mem_address && mem_address <= VIRTUAL_ROUTINE_END) {
         uint32_t val = 0;
         int vr_result = check_vr(instruction, mem_address, &val, vm);
-        if (vr_result == 0) {
 
+        if (vr_result == 0) {
             if (rd != 0) {
-                vm->regs[rd] = val;
+                uint8_t byteval = val & 0xFFFF;
+                int32_t loadedval = ((int32_t)(byteval) << 16) >> 16;  // Sign extend
+                vm->regs[rd] = loadedval;
             }
             vm->pc += 4;
             return 0;
         }
+
         // If its a virtual routine but didn't map to a valid VR address, throw an error
         register_dump(instruction, vm);
         exit(1);
@@ -276,7 +280,7 @@ int lw_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, int32_t signed_imm, V
 }
 
 int lbu_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint32_t unsigned_imm, VM *vm) {
-    uint32_t mem_address = vm->regs[rs1] + signed_imm;
+    uint32_t mem_address = vm->regs[rs1] + unsigned_imm;
     uint8_t byteval;
     uint32_t loadedval;
 
@@ -286,7 +290,7 @@ int lbu_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint32_t unsigned_im
         if (vr_result == 0) {
 
             if (rd != 0) {
-                vm->regs[rd] = val;
+                vm->regs[rd] = val & 0xFF;
             }
             vm->pc += 4;
             return 0;
@@ -312,8 +316,7 @@ int lbu_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint32_t unsigned_im
 
     // Sext and store the result
     if (rd != 0) {
-        loadedval = ((uint32_t)(byteval) << 24) >> 24;
-        vm->regs[rd] = loadedval;
+        vm->regs[rd] = (uint32_t)(byteval);
     }
 
     vm->pc += 4;
@@ -321,7 +324,7 @@ int lbu_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint32_t unsigned_im
 }
 
 int lhu_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint32_t unsigned_imm, VM *vm) {
-    uint32_t mem_address = vm->regs[rs1] + signed_imm;
+    uint32_t mem_address = vm->regs[rs1] + unsigned_imm;
     uint16_t twobyteval;
     uint32_t loadedval;
 
@@ -331,7 +334,7 @@ int lhu_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint32_t unsigned_im
         if (vr_result == 0) {
 
             if (rd != 0) {
-                vm->regs[rd] = val;
+                vm->regs[rd] = val & 0xFFFF;
             }
             vm->pc += 4;
             return 0;
@@ -358,28 +361,231 @@ int lhu_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint32_t unsigned_im
 
     // Sext and store the result
     if (rd != 0) {
-        loadedval = ((uint32_t)(twobyteval) << 16) >> 16;
-        vm->regs[rd] = loadedval;
+        vm->regs[rd] = (uint32_t)(twobyteval);
     }
 
     vm->pc += 4;
     return 0;
 }
 
-int sb_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm);
-int sh_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm);
-int sw_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm);
+int sb_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm) {
+    uint32_t mem_address = vm->regs[rs1] + signed_imm;
+    uint8_t byteval = vm->regs[rs2] & 0xFF;  // Get lowest byte
 
-// Program flow
-int slt_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint8_t rs2, VM *vm);
-int slti_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint32_t unsigned_imm, VM *vm);
-int sltu_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint8_t rs2, VM *vm);
-int sltiu_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint32_t unsigned_imm, VM *vm);
-int beq_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm);
-int bne_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm);
-int blt_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm);
-int bltu_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, uint32_t unsigned_imm, VM *vm);
-int bge_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm);
-int bgeu_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, uint32_t unsigned_imm, VM *vm);
-int jal_inst(uint32_t instruction, uint8_t rd, int32_t signed_imm, VM *vm);
-int jalr_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, int32_t signed_imm, VM *vm);
+    if (VIRTUAL_ROUTINE_START <= mem_address && mem_address <= VIRTUAL_ROUTINE_END) {
+        uint32_t val = byteval;
+        int vr_result = check_vr(instruction, mem_address, &val, vm);
+        if (vr_result >= 0) {
+            vm->pc += 4;
+            return 0;
+        }
+        register_dump(instruction, vm);
+        exit(1);
+    }
+    else if (DATA_MEM_START <= mem_address && mem_address <= DATA_MEM_END) {
+        vm->data_mem[mem_address - DATA_MEM_START] = byteval;
+    }
+    else if (INST_MEM_START <= mem_address && mem_address <= INST_MEM_END) {
+        vm->instruction_mem[mem_address] = byteval;
+    }
+    else if (HEAP_BANK_START <= mem_address && mem_address <= HEAP_BANK_END) {
+        vm->heapbank.memory[mem_address - HEAP_BANK_START] = byteval;
+    }
+    else {
+        register_dump(instruction, vm);
+        exit(1);
+    }
+
+    vm->pc += 4;
+    return 0;
+}
+
+int sh_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm) {
+    uint32_t mem_address = vm->regs[rs1] + signed_imm;
+    uint32_t value = vm->regs[rs2];
+
+    if (VIRTUAL_ROUTINE_START <= mem_address && mem_address <= VIRTUAL_ROUTINE_END) {
+        int vr_result = check_vr(instruction, mem_address, &value, vm);
+        if (vr_result >= 0) {
+            vm->pc += 4;
+            return 0;
+        }
+        register_dump(instruction, vm);
+        exit(1);
+    }
+    else if (DATA_MEM_START <= mem_address && mem_address + 1 <= DATA_MEM_END) {
+        uint32_t offset = mem_address - DATA_MEM_START;
+        vm->data_mem[offset] = value & 0xFF;
+        vm->data_mem[offset + 1] = (value >> 8) & 0xFF;
+    }
+    else if (INST_MEM_START <= mem_address && mem_address + 1 <= INST_MEM_END) {
+        vm->instruction_mem[mem_address] = value & 0xFF;
+        vm->instruction_mem[mem_address + 1] = (value >> 8) & 0xFF;
+    }
+    else if (HEAP_BANK_START <= mem_address && mem_address + 1 <= HEAP_BANK_END) {
+        uint32_t offset = mem_address - HEAP_BANK_START;
+        vm->heapbank.memory[offset] = value & 0xFF;
+        vm->heapbank.memory[offset + 1] = (value >> 8) & 0xFF;
+    }
+    else {
+        register_dump(instruction, vm);
+        exit(1);
+    }
+
+    vm->pc += 4;
+    return 0;
+}
+
+int sw_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm) {
+    uint32_t mem_address = vm->regs[rs1] + signed_imm;
+    uint32_t value = vm->regs[rs2];
+
+    if (VIRTUAL_ROUTINE_START <= mem_address && mem_address <= VIRTUAL_ROUTINE_END) {
+        int vr_result = check_vr(instruction, mem_address, &value, vm);
+        if (vr_result >= 0) {
+            vm->pc += 4;
+            return 0;
+        }
+        register_dump(instruction, vm);
+        exit(1);
+    }
+    else if (DATA_MEM_START <= mem_address && mem_address + 3 <= DATA_MEM_END) {
+        uint32_t offset = mem_address - DATA_MEM_START;
+        vm->data_mem[offset] = value & 0xFF;
+        vm->data_mem[offset + 1] = (value >> 8) & 0xFF;
+        vm->data_mem[offset + 2] = (value >> 16) & 0xFF;
+        vm->data_mem[offset + 3] = (value >> 24) & 0xFF;
+    }
+    else if (INST_MEM_START <= mem_address && mem_address + 3 <= INST_MEM_END) {
+        vm->instruction_mem[mem_address] = value & 0xFF;
+        vm->instruction_mem[mem_address + 1] = (value >> 8) & 0xFF;
+        vm->instruction_mem[mem_address + 2] = (value >> 16) & 0xFF;
+        vm->instruction_mem[mem_address + 3] = (value >> 24) & 0xFF;
+    }
+    else if (HEAP_BANK_START <= mem_address && mem_address + 3 <= HEAP_BANK_END) {
+        uint32_t offset = mem_address - HEAP_BANK_START;
+        vm->heapbank.memory[offset] = value & 0xFF;
+        vm->heapbank.memory[offset + 1] = (value >> 8) & 0xFF;
+        vm->heapbank.memory[offset + 2] = (value >> 16) & 0xFF;
+        vm->heapbank.memory[offset + 3] = (value >> 24) & 0xFF;
+    }
+    else {
+        register_dump(instruction, vm);
+        exit(1);
+    }
+
+    vm->pc += 4;
+    return 0;
+}
+
+// Program Flow
+int slt_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint8_t rs2, VM *vm) {
+    if (rd == 0) {
+        vm->pc += 4;
+        return 0;
+    }
+    vm->regs[rd] = ((int32_t)vm->regs[rs1] < (int32_t)vm->regs[rs2]) ? 1 : 0;
+    vm->pc += 4;
+    return 0;
+}
+
+int slti_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, int32_t signed_imm, VM *vm) {
+    if (rd == 0) {
+        vm->pc += 4;
+        return 0;
+    }
+    vm->regs[rd] = ((int32_t)vm->regs[rs1] < signed_imm) ? 1 : 0;
+    vm->pc += 4;
+    return 0;
+}
+
+int sltu_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint8_t rs2, VM *vm) {
+    if (rd == 0) {
+        vm->pc += 4;
+        return 0;
+    }
+    vm->regs[rd] = (vm->regs[rs1] < vm->regs[rs2]) ? 1 : 0;
+    vm->pc += 4;
+    return 0;
+}
+
+int sltiu_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint32_t unsigned_imm, VM *vm) {
+    if (rd == 0) {
+        vm->pc += 4;
+        return 0;
+    }
+    vm->regs[rd] = (vm->regs[rs1] < unsigned_imm) ? 1 : 0;
+    vm->pc += 4;
+    return 0;
+}
+
+int beq_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm) {
+    if (vm->regs[rs1] == vm->regs[rs2]) {
+        vm->pc += signed_imm;
+    } else {
+        vm->pc += 4;
+    }
+    return 0;
+}
+
+int bne_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm) {
+    if (vm->regs[rs1] != vm->regs[rs2]) {
+        vm->pc += signed_imm;
+    } else {
+        vm->pc += 4;
+    }
+    return 0;
+}
+
+int blt_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm) {
+    if ((int32_t)vm->regs[rs1] < (int32_t)vm->regs[rs2]) {
+        vm->pc += signed_imm ;
+    } else {
+        vm->pc += 4;
+    }
+    return 0;
+}
+
+int bltu_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm) {
+    if (vm->regs[rs1] < vm->regs[rs2]) {
+        vm->pc += signed_imm;
+    } else {
+        vm->pc += 4;
+    }
+    return 0;
+}
+
+int bge_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm) {
+    if ((int32_t)vm->regs[rs1] >= (int32_t)vm->regs[rs2]) {
+        vm->pc += signed_imm;
+    } else {
+        vm->pc += 4;
+    }
+    return 0;
+}
+
+int bgeu_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm) {
+    if (vm->regs[rs1] >= vm->regs[rs2]) {
+        vm->pc += signed_imm;
+    } else {
+        vm->pc += 4;
+    }
+    return 0;
+}
+
+int jal_inst(uint32_t instruction, uint8_t rd, int32_t signed_imm, VM *vm) {
+    if (rd != 0) {
+        vm->regs[rd] = vm->pc + 4;
+    }
+    vm->pc += signed_imm;   // Already shifted in decoding.c
+    return 0;
+}
+
+int jalr_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, int32_t signed_imm, VM *vm) {
+    uint32_t target = (vm->regs[rs1] + signed_imm) & ~1; 
+    if (rd != 0) {
+        vm->regs[rd] = vm->pc + 4; 
+    }
+    vm->pc = target;
+    return 0;
+}

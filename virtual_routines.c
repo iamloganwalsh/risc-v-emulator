@@ -11,7 +11,7 @@ int check_vr(uint32_t instruction, uint32_t memory_address, uint32_t *value, VM 
 
     else if (memory_address == 0x0804) {
         int32_t signed_value = (int32_t)value_copy;
-        printf("%d", signed_value);
+        printf("%d\n", signed_value);
         return 1;
     }
 
@@ -22,7 +22,7 @@ int check_vr(uint32_t instruction, uint32_t memory_address, uint32_t *value, VM 
 
     else if (memory_address == 0x080C) {
         printf("CPU Halt Requested\n");
-        register_dump(instruction, vm);
+        register_dump_silent(vm);
         exit(0);
     }
 
@@ -98,7 +98,7 @@ int check_vr(uint32_t instruction, uint32_t memory_address, uint32_t *value, VM 
         return 1;
     }
 
-    else if (memory_address == 0x0830) {
+    else if (memory_address == 0x0834) {
         uint32_t address = value_copy;
         int result = heap_free(&vm->heapbank, address);
 

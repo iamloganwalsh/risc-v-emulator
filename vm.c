@@ -19,16 +19,20 @@ int main(int argc, char *argv[]) {
     }
 
     // Next step: instruction parsing
-for (int i = 0; i < INST_MEM_SIZE; i += 4) {
-    uint32_t instruction = 
-        vm.instruction_mem[i] |
-        (vm.instruction_mem[i+1] << 8) |
-        (vm.instruction_mem[i+2] << 16) |
-        (vm.instruction_mem[i+3] << 24); // little-endian encoded
+    while (vm.pc < INST_MEM_SIZE) {
+        // Fetch instruction at current PC
+        uint32_t instruction = 
+            vm.instruction_mem[vm.pc] |
+            (vm.instruction_mem[vm.pc + 1] << 8) |
+            (vm.instruction_mem[vm.pc + 2] << 16) |
+            (vm.instruction_mem[vm.pc + 3] << 24);
 
-    vm.regs[0] = 0; // Clear 0th register
-    process_instruction(instruction, &vm);
-}
+        // Clear register 0 (always zero)
+        vm.regs[0] = 0;
+
+        // Decode and execute instruction (this will update vm.pc)
+        process_instruction(instruction, &vm);
+    }
 
     return 0;
 }

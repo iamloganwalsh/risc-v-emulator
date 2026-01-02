@@ -33,15 +33,15 @@ int sw_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, 
 
 // Program flow
 int slt_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint8_t rs2, VM *vm);
-int slti_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint32_t unsigned_imm, VM *vm);
+int slti_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, int32_t signed_imm, VM *vm);
 int sltu_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint8_t rs2, VM *vm);
 int sltiu_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, uint32_t unsigned_imm, VM *vm);
 int beq_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm);
 int bne_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm);
 int blt_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm);
-int bltu_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, uint32_t unsigned_imm, VM *vm);
+int bltu_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm);
 int bge_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm);
-int bgeu_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, uint32_t unsigned_imm, VM *vm);
+int bgeu_inst(uint32_t instruction, uint8_t rs1, uint8_t rs2, int32_t signed_imm, VM *vm);
 int jal_inst(uint32_t instruction, uint8_t rd, int32_t signed_imm, VM *vm);
 int jalr_inst(uint32_t instruction, uint8_t rd, uint8_t rs1, int32_t signed_imm, VM *vm);
 
