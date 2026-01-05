@@ -25,6 +25,8 @@ int check_vr(uint32_t instruction, uint32_t memory_address, uint32_t *value, VM 
 
     else if (memory_address == 0x0812) {
         char input;
+        printf("INPUT CHARACTER: ");
+        fflush(stdout);
 
         if (scanf("%c", &input) != 1) {
             printf("Error reading input\n");
@@ -44,6 +46,8 @@ int check_vr(uint32_t instruction, uint32_t memory_address, uint32_t *value, VM 
 
     else if (memory_address == 0x0816) {
         int32_t input;
+        printf("INPUT INTEGER: ");
+        fflush(stdout);
         if (scanf("%d", &input) != 1) {
             register_dump(instruction, vm);
             exit(1);

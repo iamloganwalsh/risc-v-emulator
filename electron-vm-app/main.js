@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain} = require('electron');
+const {app, BrowserWindow, ipcMain, Menu} = require('electron');
 const {spawn, spawnSync} = require('child_process')
 const path = require('path');
 const fs = require('fs');       // File system
@@ -95,4 +95,8 @@ ipcMain.on('vm-input', (event, input) => {
   }
 });
 
-app.whenReady().then(createWindow);
+app.on('ready', () => {
+    createWindow();
+    //Menu.setApplicationMenu(null);
+})
+

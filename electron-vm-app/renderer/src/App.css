@@ -1,26 +1,28 @@
 .UIContainer {
   display: flex;
-  flex-direction: column;  /* stack vertically */
-  align-items: center;     /* center horizontally */
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  max-width: 400px;        /* optional, for nicer layout */
-  margin: 0 auto;          /* center container in page */
+  max-width: 500px; 
+  height: 100%;
+  margin: 0 auto;
 }
 
 .FileSelectorDiv,
 .Buttons {
-  width: 100%;             /* same width for selector and buttons */
-  box-sizing: border-box;  /* include padding/border in width */
-  margin-bottom: 10px;     /* spacing between selector and buttons */
+  width: 100%; 
+  box-sizing: border-box;
+  margin-bottom: 10px;
 }
+
 
 .Buttons {
   display: flex;
   justify-content: space-between;
-  gap: 10px;               /* spacing between buttons */
+  gap: 10px;
 }
 
 .Buttons button {
-  flex: 1;                 /* buttons grow to fill equally */
+  flex: 1;
   padding: 8px 12px;
 }

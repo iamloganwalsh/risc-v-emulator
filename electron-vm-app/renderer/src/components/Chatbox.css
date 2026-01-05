@@ -1,0 +1,25 @@
+.ChatBox {
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: calc(100% - 16px);
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+.MessageDisplay {
+    flex: 1;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    font-family: monospace;
+    margin-bottom: 8px;
+}
+
+.ChatBoxInput {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    border: None;
+}

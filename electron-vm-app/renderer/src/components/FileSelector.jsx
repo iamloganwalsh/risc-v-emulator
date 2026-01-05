@@ -28,7 +28,7 @@ export function FileSelector({ onSelect }) {
   }
 
   return (
-    <select value={selected} onChange={handleChange} style={{width: "100%"}}>
+    <select value={selected} onChange={handleChange} style={{width: "100%", borderRadius: "5px", padding: "3px"}}>
       {programs.map(program => (
         <option key={program} value={program}>
           {program}

@@ -28,11 +28,12 @@ export function UploadFileButton({ fileName }) {
   );
 }
 
-export function RunFileButton({ fileName }) {
+export function RunFileButton({ fileName, chatboxRef }) {
   const handleClick = () => {
     if (!fileName) return alert('No file selected!');
-    console.log('Running file:', fileName);
-    window.api.runVM(fileName); // calls your Electron backend
+    chatboxRef.current?.clearMessages();
+    chatboxRef.current?.addMessage(`Executing file: ${fileName}\n`)
+    window.api.runVM(fileName); 
   };
 
   return (

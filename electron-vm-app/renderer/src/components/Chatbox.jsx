@@ -1,9 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import './Chatbox.css'
 
-export function Chatbox() {
+export const Chatbox = forwardRef((props, ref) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const messagesEnd = useRef(null);
+
+  // Expose addMessage function via ref
+  useImperativeHandle(ref, () => ({
+    addMessage: (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    },
+    clearMessages: () => {
+      setMessages([]);
+    }
+  }));
 
   useEffect(() => {
     const unsubscribeOutput = window.api.onVMOutput((data) => {
@@ -35,8 +46,8 @@ export function Chatbox() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '300px', border: '1px solid #ccc', padding: '8px' }}>
-      <div style={{ flex: 1, overflowY: 'auto', whiteSpace: 'pre-wrap', fontFamily: 'monospace', marginBottom: '8px' }}>
+    <div className="ChatBox" >
+      <div className="MessageDisplay" >
         {messages.map((msg, idx) => (
           <div key={idx}>{msg}</div>
         ))}
@@ -48,10 +59,10 @@ export function Chatbox() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          style={{ width: '100%', boxSizing: 'border-box' }}
+          className="ChatBoxInput"
           placeholder="Type input for program..."
         />
       </form>
     </div>
   );
-}
+});
