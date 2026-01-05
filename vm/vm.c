@@ -17,6 +17,8 @@ int main(int argc, char *argv[]) {
         exit(1);    // if above returns 1, there was an error parsing the file
     }
 
+    printf("Executing file %s\n", filename);
+
     // Next step: instruction parsing
     while (vm.pc < INST_MEM_SIZE) {
         // Fetch instruction at current PC

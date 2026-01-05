@@ -1,6 +1,14 @@
 # High Level Overview
 This is a RISC-V emulator using the RV32I instruction set.
 
+## Running the program using the Electron interface
+From the project root, run the following commands:
+```bash
+cd electron-vm-app
+npm init
+npm run start
+```
+
 ## Running the program from command line
 ### Initialising the program executable
 **Unix/Linux Systems**:
