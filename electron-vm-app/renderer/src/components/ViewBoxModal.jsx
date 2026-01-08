@@ -4,10 +4,6 @@ import './ViewBoxModal.css';
 export function ViewBoxModal({ isOpen, onClose, content, fileName }) {
   const viewEnd = useRef(null);
 
-  useEffect(() => {
-    viewEnd.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [content]);
-
   // Close on Escape key
   useEffect(() => {
     const handleEscape = (e) => {

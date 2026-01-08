@@ -20,16 +20,20 @@ export function ViewFileButton({ fileName, onView }) {
   );
 }
 
-export function UploadFileButton({ fileName }) {
-  const handleClick = () => {
-    if (!fileName) return alert('No file selected!');
-    console.log('Uploading file:', fileName);
-    // TODO: implement upload logic
+export function UploadFileButton({ onUpload }) {
+  const handleUpload = async () => {
+    
+    const result = await window.api.uploadMiFile();
+    if (result.success) {
+      onUpload?.(result.fileName);
+    } else if (!result.canceled) {
+      alert(`Upload failed; ${result.error}`);
+    }
   };
 
   return (
-    <button onClick={handleClick}>
-      Upload File
+    <button onClick={handleUpload}>
+      Upload .mi File
     </button>
   );
 }

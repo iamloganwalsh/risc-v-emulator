@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain, Menu} = require('electron');
+const {app, BrowserWindow, ipcMain, Menu, dialog} = require('electron');
 const {spawn, spawnSync} = require('child_process')
 const path = require('path');
 const fs = require('fs');       // File system
@@ -111,6 +111,38 @@ ipcMain.handle('read-binary-file', async (event, programName) => {
         return {success: false, error: error.message};
     }
 });
+
+ipcMain.handle('upload-binary-file', async () => {
+
+    const result = await dialog.showOpenDialog({
+        title: 'Select .mi binary file',
+        properties: ['openFile'],
+        filters: [
+            {name: 'Machine Instructions', extensions: ['mi']}
+        ]
+    });
+
+    if (result.canceled || result.filePaths.length == 0) {
+        return {success: false, canceled: true};
+    }
+
+    const programsDir = path.join(__dirname, '..', 'vm', 'programs');
+
+    const sourcePath = result.filePaths[0];
+    const fileName = path.basename(sourcePath);
+    const destinationPath = path.join(programsDir, fileName);
+
+    if (fs.existsSync(destinationPath)) {
+        return {success: false, error: 'File already exists with this name'};
+    }
+
+    try {
+        fs.copyFileSync(sourcePath, destinationPath);
+        return {success: true, fileName};
+    } catch (err) {
+        return {success: false, error: err.message};
+    }
+})
 
 app.on('ready', () => {
     createWindow();

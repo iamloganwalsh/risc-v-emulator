@@ -18,5 +18,7 @@ contextBridge.exposeInMainWorld('api', {
     
     sendVMInput: (input) => ipcRenderer.send('vm-input', input),
 
-    readProgramFile: (programName) => ipcRenderer.invoke('read-binary-file', programName)
+    readProgramFile: (programName) => ipcRenderer.invoke('read-binary-file', programName),
+
+    uploadMiFile: () => ipcRenderer.invoke('upload-binary-file'),
 });
