@@ -95,6 +95,23 @@ ipcMain.on('vm-input', (event, input) => {
   }
 });
 
+// Fetch binary file contents
+ipcMain.handle('read-binary-file', async (event, programName) => {
+    const programPath = path.join(__dirname, '..', 'vm', 'programs', programName);
+
+    try {
+        //const content = fs.readFileSync(programPath, 'utf8');
+        const buffer = fs.readFileSync(programPath);
+        const hex = buffer
+            .toString('hex')
+            .match(/.{1,8}/g)   // 4 bytes = 8 hex chars
+            .join(' ');
+        return {success: true, content: hex};
+    } catch (error) {
+        return {success: false, error: error.message};
+    }
+});
+
 app.on('ready', () => {
     createWindow();
     //Menu.setApplicationMenu(null);

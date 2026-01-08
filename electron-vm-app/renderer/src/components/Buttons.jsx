@@ -1,10 +1,16 @@
 import './Buttons.css'
 
-export function ViewFileButton({ fileName }) {
-  const handleClick = () => {
+export function ViewFileButton({ fileName, onView }) {
+  const handleClick = async () => {
     if (!fileName) return alert('No file selected!');
-    console.log('Viewing file:', fileName);
-    // TODO: implement actual viewing logic
+    
+    const result = await window.api.readProgramFile(fileName);
+
+    if (result.success) {
+      onView(fileName, result.content);
+    } else {
+      alert(`Failed to read file: ${result.error}`);
+    }
   };
 
   return (
