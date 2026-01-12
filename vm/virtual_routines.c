@@ -20,6 +20,7 @@ int check_vr(uint32_t instruction, uint32_t memory_address, uint32_t *value, VM 
 
     else if (memory_address == 0x080C) {
         printf("CPU Halt Requested\n");
+        register_dump_silent(vm);
         exit(0);
     }
 

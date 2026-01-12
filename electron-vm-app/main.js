@@ -146,6 +146,6 @@ ipcMain.handle('upload-binary-file', async () => {
 
 app.on('ready', () => {
     createWindow();
-    //Menu.setApplicationMenu(null);
+    Menu.setApplicationMenu(null);
 })
 
