@@ -17,7 +17,10 @@ This is a RISC-V emulator using the RV32I instruction set.
 From the project root, run the following commands:
 ```bash
 cd electron-vm-app
-npm init
+npm install
+cd renderer
+npm install
+cd ..
 npm run start
 ```
 

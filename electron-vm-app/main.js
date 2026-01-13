@@ -7,8 +7,8 @@ let currentProcess = null;      // VM process used to execute C code
 
 const createWindow = () => {
     const win = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 532,
+        height: 550,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
@@ -146,6 +146,6 @@ ipcMain.handle('upload-binary-file', async () => {
 
 app.on('ready', () => {
     createWindow();
-    Menu.setApplicationMenu(null);
+    // Menu.setApplicationMenu(null);
 })
 

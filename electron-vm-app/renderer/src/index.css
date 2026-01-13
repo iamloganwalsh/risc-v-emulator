@@ -13,6 +13,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #B7C8C2;
 }
 
 #root {
